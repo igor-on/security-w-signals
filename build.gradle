@@ -387,7 +387,7 @@ checkstyle {
 }
 
 opensearchplugin {
-    name 'opensearch-security'
+    name 'opensearch-security-w-signals'
     description 'Provide access control related features for OpenSearch'
     classname 'org.opensearch.security.OpenSearchSecurityPlugin'
 }
