@@ -26,4 +26,8 @@ public interface AuthFailureListener {
     void onAuthFailure(InetAddress remoteAddress, AuthCredentials authCredentials, Object request);
 
     WildcardMatcher getIgnoreHostsMatcher();
+
+    default String getType() {
+        return getClass().getName();
+    }
 }

@@ -28,19 +28,15 @@ package org.opensearch.security.user;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.google.common.collect.Lists;
 
+import com.jayway.jsonpath.JsonPath;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
+import org.opensearch.security.privileges.UserAttributes;
 
 /**
  * A authenticated user and attributes associated to them (like roles, tenant, custom attributes)
@@ -49,6 +45,10 @@ import org.opensearch.core.common.io.stream.Writeable;
  *
  */
 public class User implements Serializable, Writeable, CustomAttributesAware {
+
+    public static Builder forUser(String username) {
+        return new Builder().name(username);
+    }
 
     public static final User ANONYMOUS = new User(
         "opendistro_security_anonymous",
@@ -67,16 +67,30 @@ public class User implements Serializable, Writeable, CustomAttributesAware {
         null
     );
 
+    private String authDomain;
+
     private static final long serialVersionUID = -5500938501822658596L;
     private final String name;
     /**
      * roles == backend_roles
      */
-    private final Set<String> roles = Collections.synchronizedSet(new HashSet<String>());
-    private final Set<String> securityRoles = Collections.synchronizedSet(new HashSet<String>());
+    private Set<String> roles = Collections.synchronizedSet(new HashSet<String>());
+    private Set<String> securityRoles = Collections.synchronizedSet(new HashSet<String>());
     private String requestedTenant;
     private Map<String, String> attributes = Collections.synchronizedMap(new HashMap<>());
     private boolean isInjected = false;
+
+    public User(String name, AuthDomainInfo authDomainInfo, Set<String> roles, Set<String> securityRoles, String requestedTenant, Map<String, String> attributes,
+                boolean isInjected) {
+        super();
+        this.name = name;
+        this.authDomain = authDomainInfo != null ? authDomainInfo.toInfoString() : null;
+        this.roles = roles;
+        this.securityRoles = securityRoles;
+        this.requestedTenant = requestedTenant;
+        this.attributes = attributes;
+        this.isInjected = isInjected;
+    }
 
     public User(final StreamInput in) throws IOException {
         super();
@@ -129,6 +143,10 @@ public class User implements Serializable, Writeable, CustomAttributesAware {
 
     public final String getName() {
         return name;
+    }
+
+    public String getAuthDomain() {
+        return authDomain;
     }
 
     /**
@@ -295,5 +313,129 @@ public class User implements Serializable, Writeable, CustomAttributesAware {
     public boolean isServiceAccount() {
         Map<String, String> userAttributesMap = this.getCustomAttributesMap();
         return userAttributesMap != null && "true".equals(userAttributesMap.get("attr.internal.service"));
+    }
+
+
+    public static class Builder {
+        private String name;
+        private String subName;
+        private AuthDomainInfo authDomainInfo;
+        private String type;
+        private final Set<String> backendRoles = new HashSet<String>();
+        private final Set<String> securityRoles = new HashSet<String>();
+        private String requestedTenant;
+        private Map<String, String> attributes = new HashMap<>();
+        private Map<String, Object> structuredAttributes = new HashMap<>();
+        private boolean injected;
+        private Object specialAuthzConfig;
+        private boolean authzComplete;
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder subName(String subName) {
+            this.subName = subName;
+            return this;
+        }
+
+        public Builder authDomainInfo(AuthDomainInfo authDomainInfo) {
+            if (this.authDomainInfo == null) {
+                this.authDomainInfo = authDomainInfo;
+            } else {
+                this.authDomainInfo = this.authDomainInfo.add(authDomainInfo);
+            }
+            return this;
+        }
+
+        public Builder type(String type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder requestedTenant(String requestedTenant) {
+            this.requestedTenant = requestedTenant;
+            return this;
+        }
+
+//        public Builder with(AuthCredentials authCredentials) {
+//            this.authDomainInfo(authCredentials.getAuthDomainInfo());
+//            this.backendRoles(authCredentials.getBackendRoles());
+//            this.oldAttributes(authCredentials.getAttributes());
+//            this.attributes(authCredentials.getStructuredAttributes());
+//            return this;
+//        }
+
+        public Builder backendRoles(String... backendRoles) {
+            return this.backendRoles(Arrays.asList(backendRoles));
+        }
+
+        public Builder backendRoles(Collection<String> backendRoles) {
+            if (backendRoles != null) {
+                this.backendRoles.addAll(backendRoles);
+            }
+            return this;
+        }
+
+        public Builder searchGuardRoles(String... searchGuardRoles) {
+            return this.searchGuardRoles(Arrays.asList(searchGuardRoles));
+        }
+
+        public Builder searchGuardRoles(Collection<String> securityRoles) {
+            if (securityRoles != null) {
+                this.securityRoles.addAll(securityRoles);
+            }
+            return this;
+        }
+
+        @Deprecated
+        public Builder oldAttributes(Map<String, String> attributes) {
+            this.attributes.putAll(attributes);
+            return this;
+        }
+
+//        public Builder attributes(Map<String, Object> attributes) {
+//            UserAttributes.validate(attributes);
+//            this.structuredAttributes.putAll(attributes);
+//            return this;
+//        }
+//
+//        public Builder attribute(String key, Object value) {
+//            UserAttributes.validate(value);
+//            this.structuredAttributes.put(key, value);
+//            return this;
+//        }
+//
+//        public Builder attributesByJsonPath(Map<String, JsonPath> jsonPathMap, Object source) {
+//            UserAttributes.addAttributesByJsonPath(jsonPathMap, source, this.structuredAttributes);
+//            return this;
+//        }
+
+        @Deprecated
+        public Builder oldAttribute(String key, String value) {
+            this.attributes.put(key, value);
+            return this;
+        }
+
+        public Builder injected() {
+            this.injected = true;
+            return this;
+        }
+
+        public Builder specialAuthzConfig(Object specialAuthzConfig) {
+            this.specialAuthzConfig = specialAuthzConfig;
+            return this;
+        }
+
+        public Builder authzComplete() {
+            this.authzComplete = true;
+            return this;
+        }
+
+        public User build() {
+            return new User(name, authDomainInfo, backendRoles, securityRoles, requestedTenant,
+                     attributes, injected);
+        }
     }
 }

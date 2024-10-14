@@ -17,6 +17,7 @@
 
 package org.opensearch.security.securityconf;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,6 +55,7 @@ import org.opensearch.common.settings.Settings;
 import org.opensearch.common.util.set.Sets;
 import org.opensearch.core.common.transport.TransportAddress;
 import org.opensearch.core.xcontent.NamedXContentRegistry;
+import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.security.privileges.UserAttributes;
 import org.opensearch.security.resolver.IndexResolverReplacer.Resolved;
 import org.opensearch.security.securityconf.impl.SecurityDynamicConfiguration;
@@ -501,6 +503,23 @@ public class ConfigModelV7 extends ConfigModel {
                 }
             }
             return isPatternMatched && isPermitted;
+        }
+
+        @Override
+        public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+            builder.startObject();
+
+            builder.startObject("_sg_meta");
+            builder.field("type", "roles");
+            builder.field("config_version", 2);
+            builder.endObject();
+
+            for (SecurityRole role : roles) {
+                builder.field(role.getName(), role);
+            }
+
+            builder.endObject();
+            return builder;
         }
     }
 

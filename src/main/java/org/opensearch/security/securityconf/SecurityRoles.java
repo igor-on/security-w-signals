@@ -32,10 +32,11 @@ import java.util.Set;
 import org.opensearch.cluster.metadata.IndexNameExpressionResolver;
 import org.opensearch.cluster.service.ClusterService;
 import org.opensearch.core.xcontent.NamedXContentRegistry;
+import org.opensearch.core.xcontent.ToXContentObject;
 import org.opensearch.security.resolver.IndexResolverReplacer.Resolved;
 import org.opensearch.security.user.User;
 
-public interface SecurityRoles {
+public interface SecurityRoles extends ToXContentObject {
 
     boolean impliesClusterPermissionPermission(String action0);
 

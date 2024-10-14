@@ -355,6 +355,10 @@ public class DynamicConfigFactory implements Initializable, ConfigurationChangeL
         eventBus.unregister(listener);
     }
 
+    public interface DCFListener {
+        void onChanged(ConfigModel cm, DynamicConfigModel dcm, InternalUsersModel ium);
+    }
+
     private static class InternalUsersModelV7 extends InternalUsersModel {
 
         private final SecurityDynamicConfiguration<InternalUserV7> internalUserV7SecurityDynamicConfiguration;

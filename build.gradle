@@ -576,14 +576,13 @@ tasks.integrationTest.finalizedBy(jacocoTestReport) // report is always generate
 check.dependsOn integrationTest
 
 dependencies {
+    implementation 'commons-validator:commons-validator:1.9.0'
     implementation('com.jayway.jsonpath:json-path:2.5.0') {
             exclude group: 'net.minidev', module: 'json-smart'
             exclude group: 'org.ow2.asm', module: 'asm'
         }
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.68'
     implementation 'org.apache.cxf:cxf-rt-rs-security-jose:3.3.11'
-    implementation 'com.floragunn:search-guard-suite-scheduler:7.14.0-52.3.0'
-    implementation 'com.floragunn:search-guard-suite-support:7.14.0-52.3.0'
     implementation 'org.quartz-scheduler:quartz:2.3.2'
     implementation "org.opensearch.plugin:transport-netty4-client:${opensearch_version}"
     implementation "org.opensearch.client:opensearch-rest-high-level-client:${opensearch_version}"
