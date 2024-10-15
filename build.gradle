@@ -576,6 +576,8 @@ tasks.integrationTest.finalizedBy(jacocoTestReport) // report is always generate
 check.dependsOn integrationTest
 
 dependencies {
+    implementation 'javax.mail:mail:1.4.7'
+    implementation 'org.simplejavamail:simple-java-mail:5.2.1'
     implementation 'commons-validator:commons-validator:1.9.0'
     implementation('com.jayway.jsonpath:json-path:2.5.0') {
             exclude group: 'net.minidev', module: 'json-smart'

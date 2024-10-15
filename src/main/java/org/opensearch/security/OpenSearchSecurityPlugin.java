@@ -56,6 +56,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -71,6 +72,7 @@ import org.opensearch.action.ActionRequest;
 import org.opensearch.action.search.PitService;
 import org.opensearch.action.search.SearchScrollAction;
 import org.opensearch.action.support.ActionFilter;
+import org.opensearch.action.support.IndicesOptions;
 import org.opensearch.client.Client;
 import org.opensearch.cluster.ClusterState;
 import org.opensearch.cluster.NamedDiff;
@@ -170,6 +172,7 @@ import org.opensearch.security.privileges.PrivilegesEvaluator;
 import org.opensearch.security.privileges.PrivilegesInterceptor;
 import org.opensearch.security.privileges.RestLayerPrivilegesEvaluator;
 import org.opensearch.security.resolver.IndexResolverReplacer;
+import org.opensearch.security.resolver.IndexResolverReplacer.Resolved;
 import org.opensearch.security.rest.DashboardsInfoAction;
 import org.opensearch.security.rest.SecurityConfigUpdateAction;
 import org.opensearch.security.rest.SecurityHealthAction;
@@ -187,14 +190,7 @@ import org.opensearch.security.ssl.http.netty.ValidatingDispatcher;
 import org.opensearch.security.ssl.transport.DefaultPrincipalExtractor;
 import org.opensearch.security.ssl.util.SSLConfigConstants;
 import org.opensearch.security.state.SecurityMetadata;
-import org.opensearch.security.support.ConfigConstants;
-import org.opensearch.security.support.GuardedSearchOperationWrapper;
-import org.opensearch.security.support.HeaderHelper;
-import org.opensearch.security.support.ModuleInfo;
-import org.opensearch.security.support.ReflectionHelper;
-import org.opensearch.security.support.SecuritySettings;
-import org.opensearch.security.support.SecurityUtils;
-import org.opensearch.security.support.WildcardMatcher;
+import org.opensearch.security.support.*;
 import org.opensearch.security.transport.DefaultInterClusterRequestEvaluator;
 import org.opensearch.security.transport.InterClusterRequestEvaluator;
 import org.opensearch.security.transport.SecurityInterceptor;
@@ -2212,5 +2208,62 @@ public final class OpenSearchSecurityPlugin extends OpenSearchSecuritySSLPlugin
         @Override
         public void stop() {}
 
+    }
+
+    public static final class ProtectedIndices {
+        final Set<String> protectedPatterns;
+
+        private ProtectedIndices() {
+            protectedPatterns = null;
+        }
+
+        private ProtectedIndices(Settings settings, String... patterns) {
+            protectedPatterns = new HashSet<>();
+            protectedPatterns.add(settings.get(ConfigConstants.SECURITY_CONFIG_INDEX_NAME, ConfigConstants.OPENDISTRO_SECURITY_DEFAULT_CONFIG_INDEX));
+            if (patterns != null && patterns.length > 0) {
+                protectedPatterns.addAll(Arrays.asList(patterns));
+            }
+        }
+
+        public void add(String pattern) {
+            protectedPatterns.add(pattern);
+        }
+
+        public boolean isProtected(String index) {
+            return protectedPatterns == null ? false : WildcardMatcherSG.matchAny(protectedPatterns, index);
+        }
+
+        public boolean containsProtected(Collection<String> indices) {
+            return protectedPatterns == null ? false : WildcardMatcherSG.matchAny(protectedPatterns, indices);
+        }
+
+        public String printProtectedIndices() {
+            return protectedPatterns == null ? "" : Joiner.on(',').join(protectedPatterns);
+        }
+
+        public String[] getProtectedIndicesAsMinusPattern(IndexResolverReplacer irr, Object request) {
+            if (protectedPatterns == null) {
+                return new String[0];
+            }
+
+
+            Resolved resolved = irr.resolveRequest(request); // TODO: IGOR_ON CHANGE
+//            final Resolved resolved = irr.resolveIndexPatterns(IndicesOptions.lenientExpandOpen(), request, protectedPatterns.toArray(new String[0]));
+
+            String[] res = new String[resolved.getAllIndices().size()];
+            int i = 0;
+            for (String p : resolved.getAllIndices()) {
+                res[i++] = "-" + p;
+            }
+
+            return res.clone();
+        }
+
+        public void filterIndices(Set<String> indices) {
+            for (String p : protectedPatterns) {
+                WildcardMatcherSG.wildcardRemoveFromSet(indices, p);
+            }
+
+        }
     }
 }

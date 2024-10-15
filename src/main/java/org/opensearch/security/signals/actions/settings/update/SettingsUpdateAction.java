@@ -1,0 +1,38 @@
+package org.opensearch.security.signals.actions.settings.update;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.opensearch.core.action.ActionListener;
+import org.opensearch.action.ActionType;
+import org.opensearch.client.Client;
+
+public class SettingsUpdateAction extends ActionType<SettingsUpdateResponse> {
+    private final static Logger log = LogManager.getLogger(SettingsUpdateAction.class);
+
+    public static final SettingsUpdateAction INSTANCE = new SettingsUpdateAction();
+    public static final String NAME = "cluster:admin:searchguard:signals:settings/update";
+
+    protected SettingsUpdateAction() {
+        super(NAME, in -> {
+            SettingsUpdateResponse response = new SettingsUpdateResponse(in);
+            return response;
+        });
+    }
+
+    public static void send(Client client) {
+        client.execute(SettingsUpdateAction.INSTANCE, new SettingsUpdateRequest(), new ActionListener<SettingsUpdateResponse>() {
+
+            @Override
+            public void onResponse(SettingsUpdateResponse response) {
+                log.info("Result of settings update:\n" + response);
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                log.error("settings update failed", e);
+            }
+        });
+    }
+
+}
