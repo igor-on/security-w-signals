@@ -27,12 +27,16 @@
 package org.opensearch.security;
 
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.google.common.collect.ImmutableSet;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -228,6 +232,13 @@ public class DefaultObjectMapper {
 
     }
 
+    public static String writeJsonTree(JsonNode jsonNode) throws IOException {
+        Writer writer = new StringWriter();
+        JsonGenerator jsonGenerator = new JsonFactory().createGenerator(writer);
+        objectMapper.writeTree(jsonGenerator, jsonNode);
+        return writer.toString();
+    }
+
     @SuppressWarnings("removal")
     public static <T> T readValue(String string, TypeReference<T> tr) throws IOException {
 
@@ -277,5 +288,42 @@ public class DefaultObjectMapper {
             .stream()
             .map(BeanPropertyDefinition::getName)
             .collect(ImmutableSet.toImmutableSet());
+    }
+
+    // TODO: IGOR_ON (added convertValue methods)
+    public static <T> T convertValue(Object value, JavaType jt) {
+        return convertValue(value, jt, false);
+    }
+
+    public static <T> T convertValue(Object value, JavaType jt, boolean omitDefaults) {
+
+        final SecurityManager sm = System.getSecurityManager();
+
+        if (sm != null) {
+            sm.checkPermission(new SpecialPermission());
+        }
+
+        return AccessController.doPrivileged(new PrivilegedAction<T>() {
+            @Override
+            public T run() {
+                return (omitDefaults ? defaulOmittingObjectMapper : objectMapper).convertValue(value, jt);
+            }
+        });
+    }
+
+    public static <T> T convertValue(Object value, Class<T> clazz, boolean omitDefaults) {
+
+        final SecurityManager sm = System.getSecurityManager();
+
+        if (sm != null) {
+            sm.checkPermission(new SpecialPermission());
+        }
+
+        return AccessController.doPrivileged(new PrivilegedAction<T>() {
+            @Override
+            public T run() {
+                return (omitDefaults ? defaulOmittingObjectMapper : objectMapper).convertValue(value, clazz);
+            }
+        });
     }
 }

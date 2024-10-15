@@ -10,10 +10,12 @@ import org.opensearch.client.Client;
 import org.opensearch.core.common.Strings;
 import org.opensearch.common.util.concurrent.ThreadContext;
 import org.opensearch.common.util.concurrent.ThreadContext.StoredContext;
+import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.ToXContent;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.common.xcontent.XContentFactory;
 
+import org.opensearch.security.internalauthtoken.InternalAuthTokenProvider;
 import org.opensearch.security.signals.settings.SignalsSettings;
 
 /**
@@ -69,7 +71,7 @@ public class WatchLogIndexWriter implements WatchLogWriter {
                 IndexResponse response = client.index(indexRequest).actionGet();
                 
                 if (log.isDebugEnabled()) {
-                    log.debug("Completed sync writing WatchLog: " + watchLog + "\n" + Strings.toString(response));
+                    log.debug("Completed sync writing WatchLog: " + watchLog + "\n" + Strings.toString(MediaTypeRegistry.JSON, response));
                 }
             } else {
                 client.index(indexRequest, new ActionListener<IndexResponse>() {
@@ -77,7 +79,7 @@ public class WatchLogIndexWriter implements WatchLogWriter {
                     @Override
                     public void onResponse(IndexResponse response) {
                         if (log.isDebugEnabled()) {
-                            log.debug("Completed writing WatchLog: " + watchLog + "\n" + Strings.toString(response));
+                            log.debug("Completed writing WatchLog: " + watchLog + "\n" + Strings.toString(MediaTypeRegistry.JSON, response));
                         }
                     }
 

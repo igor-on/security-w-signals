@@ -15,6 +15,7 @@ import org.opensearch.action.index.IndexRequest;
 import org.opensearch.action.index.IndexResponse;
 import org.opensearch.action.support.WriteRequest.RefreshPolicy;
 import org.opensearch.core.common.Strings;
+import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.common.xcontent.XContentFactory;
 import org.opensearch.common.unit.TimeValue;
@@ -74,7 +75,7 @@ public class IndexAction extends ActionHandler {
                 IndexResponse indexResponse = ctx.getClient().index(indexRequest).get();
                 
                 if (log.isDebugEnabled()) {
-                    log.debug("Result of " + this + ":\n" + Strings.toString(indexResponse));
+                    log.debug("Result of " + this + ":\n" + Strings.toString(MediaTypeRegistry.JSON, indexResponse));
                 }
             }
 
@@ -105,7 +106,7 @@ public class IndexAction extends ActionHandler {
                 BulkResponse response = ctx.getClient().bulk(bulkRequest).get();
 
                 if (log.isDebugEnabled()) {
-                    log.debug("Result of " + this + ":\n" + Strings.toString(response));
+                    log.debug("Result of " + this + ":\n" + Strings.toString(MediaTypeRegistry.JSON, response));
                 }
                 
                 if (response.hasFailures()) {

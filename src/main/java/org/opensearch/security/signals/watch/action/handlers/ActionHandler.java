@@ -8,6 +8,7 @@ import org.opensearch.core.common.Strings;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.security.codova.validation.ConfigValidationException;
 import org.opensearch.security.codova.validation.ValidationErrors;
 import org.opensearch.security.codova.validation.errors.InvalidAttributeValue;
@@ -32,7 +33,7 @@ public abstract class ActionHandler extends WatchElement {
     public abstract String getType();
 
     public String toJson() {
-        return Strings.toString(this);
+        return Strings.toString(MediaTypeRegistry.JSON, this);
     }
 
     public static ActionHandler create(WatchInitializationService watchInitService, ValidatingJsonNode jsonNode) throws ConfigValidationException {

@@ -21,6 +21,7 @@ import org.opensearch.core.xcontent.NamedXContentRegistry;
 import org.opensearch.env.Environment;
 import org.opensearch.env.NodeEnvironment;
 import org.opensearch.script.ScriptService;
+import org.opensearch.security.internalauthtoken.InternalAuthTokenProvider;
 import org.opensearch.threadpool.ThreadPool;
 import org.opensearch.watcher.ResourceWatcherService;
 
@@ -38,11 +39,11 @@ import org.opensearch.security.securityconf.InternalUsersModel;
 import org.opensearch.security.support.ConfigConstants;
 import org.opensearch.security.user.User;
 import org.opensearch.security.searchsupport.diag.DiagnosticContext;
-import com.floragunn.signals.accounts.AccountRegistry;
-import com.floragunn.signals.settings.SignalsSettings;
-import com.floragunn.signals.settings.SignalsSettings.StaticSettings.IndexNames;
-import com.floragunn.signals.watch.Watch;
-import com.floragunn.signals.watch.state.WatchState;
+import org.opensearch.security.signals.accounts.AccountRegistry;
+import org.opensearch.security.signals.settings.SignalsSettings;
+import org.opensearch.security.signals.settings.SignalsSettings.StaticSettings.IndexNames;
+import org.opensearch.security.signals.watch.Watch;
+import org.opensearch.security.signals.watch.state.WatchState;
 import com.google.common.io.BaseEncoding;
 
 public class Signals extends AbstractLifecycleComponent {
@@ -97,10 +98,12 @@ public class Signals extends AbstractLifecycleComponent {
 
             createIndexes(protectedConfigIndexService);
 
-            if (settings.getAsBoolean(ConfigConstants.SEARCHGUARD_ENTERPRISE_MODULES_ENABLED, true)
-                    && signalsSettings.getStaticSettings().isEnterpriseEnabled()) {
-                initEnterpriseModules();
-            }
+            // TODO: IGOR_ON CHANGE (always init enterprise modules)
+//            if (settings.getAsBoolean(ConfigConstants.SEARCHGUARD_ENTERPRISE_MODULES_ENABLED, true)
+//                    && signalsSettings.getStaticSettings().isEnterpriseEnabled()) {
+//            }
+
+            initEnterpriseModules();
 
             this.accountRegistry = new AccountRegistry(signalsSettings);
 
@@ -326,7 +329,7 @@ public class Signals extends AbstractLifecycleComponent {
 
         try {
 
-            signalsEnterpriseFeatures = Class.forName("com.floragunn.signals.enterprise.SignalsEnterpriseFeatures");
+            signalsEnterpriseFeatures = Class.forName("org.opensearch.security.signals.enterprise.SignalsEnterpriseFeatures");
 
         } catch (ClassNotFoundException e) {
             throw new SignalsInitializationException("Signals enterprise features not found", e);

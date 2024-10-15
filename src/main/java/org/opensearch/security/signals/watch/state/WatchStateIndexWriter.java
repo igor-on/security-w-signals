@@ -14,6 +14,7 @@ import org.opensearch.action.index.IndexResponse;
 import org.opensearch.action.support.WriteRequest.RefreshPolicy;
 import org.opensearch.client.Client;
 import org.opensearch.core.common.Strings;
+import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.ToXContent;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.common.xcontent.XContentFactory;
@@ -39,7 +40,7 @@ public class WatchStateIndexWriter implements WatchStateWriter<IndexResponse> {
                 @Override
                 public void onResponse(IndexResponse response) {
                     if (log.isDebugEnabled()) {
-                        log.debug("Updated " + watchId + " to:\n" + watchState + "\n" + Strings.toString(response));
+                        log.debug("Updated " + watchId + " to:\n" + watchState + "\n" + Strings.toString(MediaTypeRegistry.JSON, response));
                     }
                 }
 
@@ -76,7 +77,7 @@ public class WatchStateIndexWriter implements WatchStateWriter<IndexResponse> {
             @Override
             public void onResponse(BulkResponse response) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Updated " + idToStateMap.keySet() + "\n" + Strings.toString(response));
+                    log.debug("Updated " + idToStateMap.keySet() + "\n" + Strings.toString(MediaTypeRegistry.JSON, response));
                 }
             }
 
@@ -113,7 +114,7 @@ public class WatchStateIndexWriter implements WatchStateWriter<IndexResponse> {
                 @Override
                 public void onResponse(IndexResponse response) {
                     if (log.isDebugEnabled()) {
-                        log.debug("Updated " + watchId + " to:\n" + watchState + "\n" + Strings.toString(response));
+                        log.debug("Updated " + watchId + " to:\n" + watchState + "\n" + Strings.toString(MediaTypeRegistry.JSON, response));
                     }
                 }
 

@@ -29,62 +29,62 @@ import org.opensearch.security.searchsupport.jobs.actions.CheckForExecutingTrigg
 import org.opensearch.security.searchsupport.jobs.actions.SchedulerConfigUpdateAction;
 import org.opensearch.security.searchsupport.jobs.actions.TransportCheckForExecutingTriggerAction;
 import org.opensearch.security.searchsupport.jobs.actions.TransportSchedulerConfigUpdateAction;
-import com.floragunn.signals.actions.account.config_update.DestinationConfigUpdateAction;
-import com.floragunn.signals.actions.account.config_update.TransportDestinationConfigUpdateAction;
-import com.floragunn.signals.actions.account.delete.DeleteAccountAction;
-import com.floragunn.signals.actions.account.delete.TransportDeleteAccountAction;
-import com.floragunn.signals.actions.account.get.GetAccountAction;
-import com.floragunn.signals.actions.account.get.TransportGetAccountAction;
-import com.floragunn.signals.actions.account.put.PutAccountAction;
-import com.floragunn.signals.actions.account.put.TransportPutAccountAction;
-import com.floragunn.signals.actions.account.search.SearchAccountAction;
-import com.floragunn.signals.actions.account.search.TransportSearchAccountAction;
-import com.floragunn.signals.actions.admin.start_stop.StartStopAction;
-import com.floragunn.signals.actions.admin.start_stop.TransportStartStopAction;
-import com.floragunn.signals.actions.settings.get.GetSettingsAction;
-import com.floragunn.signals.actions.settings.get.TransportGetSettingsAction;
-import com.floragunn.signals.actions.settings.put.PutSettingsAction;
-import com.floragunn.signals.actions.settings.put.TransportPutSettingsAction;
-import com.floragunn.signals.actions.settings.update.SettingsUpdateAction;
-import com.floragunn.signals.actions.settings.update.TransportSettingsUpdateAction;
-import com.floragunn.signals.actions.tenant.start_stop.StartStopTenantAction;
-import com.floragunn.signals.actions.tenant.start_stop.TransportStartStopTenantAction;
-import com.floragunn.signals.actions.watch.ack.AckWatchAction;
-import com.floragunn.signals.actions.watch.ack.TransportAckWatchAction;
-import com.floragunn.signals.actions.watch.activate_deactivate.TransportDeActivateWatchAction;
-import com.floragunn.signals.actions.watch.delete.DeleteWatchAction;
-import com.floragunn.signals.actions.watch.delete.TransportDeleteWatchAction;
-import com.floragunn.signals.actions.watch.execute.ExecuteWatchAction;
-import com.floragunn.signals.actions.watch.execute.TransportExecuteWatchAction;
-import com.floragunn.signals.actions.watch.get.GetWatchAction;
-import com.floragunn.signals.actions.watch.get.TransportGetWatchAction;
-import com.floragunn.signals.actions.watch.put.PutWatchAction;
-import com.floragunn.signals.actions.watch.put.TransportPutWatchAction;
-import com.floragunn.signals.actions.watch.search.SearchWatchAction;
-import com.floragunn.signals.actions.watch.search.TransportSearchWatchAction;
-import com.floragunn.signals.actions.watch.state.get.GetWatchStateAction;
-import com.floragunn.signals.actions.watch.state.get.TransportGetWatchStateAction;
-import com.floragunn.signals.actions.watch.state.search.SearchWatchStateAction;
-import com.floragunn.signals.actions.watch.state.search.TransportSearchWatchStateAction;
-import com.floragunn.signals.api.AccountApiAction;
-import com.floragunn.signals.api.AckWatchApiAction;
-import com.floragunn.signals.api.ConvertWatchApiAction;
-import com.floragunn.signals.api.DeActivateGloballyAction;
-import com.floragunn.signals.api.DeActivateTenantAction;
-import com.floragunn.signals.api.DeActivateWatchAction;
-import com.floragunn.signals.api.ExecuteWatchApiAction;
-import com.floragunn.signals.api.SearchAccountApiAction;
-import com.floragunn.signals.api.SearchWatchApiAction;
-import com.floragunn.signals.api.SearchWatchStateApiAction;
-import com.floragunn.signals.api.SettingsApiAction;
-import com.floragunn.signals.api.WatchApiAction;
-import com.floragunn.signals.api.WatchStateApiAction;
-import com.floragunn.signals.script.types.SignalsObjectFunctionScript;
-import com.floragunn.signals.settings.SignalsSettings;
-import com.floragunn.signals.watch.checks.Calc;
-import com.floragunn.signals.watch.checks.Condition;
-import com.floragunn.signals.watch.checks.Transform;
-import com.floragunn.signals.watch.severity.SeverityMapping;
+import org.opensearch.security.signals.actions.account.config_update.DestinationConfigUpdateAction;
+import org.opensearch.security.signals.actions.account.config_update.TransportDestinationConfigUpdateAction;
+import org.opensearch.security.signals.actions.account.delete.DeleteAccountAction;
+import org.opensearch.security.signals.actions.account.delete.TransportDeleteAccountAction;
+import org.opensearch.security.signals.actions.account.get.GetAccountAction;
+import org.opensearch.security.signals.actions.account.get.TransportGetAccountAction;
+import org.opensearch.security.signals.actions.account.put.PutAccountAction;
+import org.opensearch.security.signals.actions.account.put.TransportPutAccountAction;
+import org.opensearch.security.signals.actions.account.search.SearchAccountAction;
+import org.opensearch.security.signals.actions.account.search.TransportSearchAccountAction;
+import org.opensearch.security.signals.actions.admin.start_stop.StartStopAction;
+import org.opensearch.security.signals.actions.admin.start_stop.TransportStartStopAction;
+import org.opensearch.security.signals.actions.settings.get.GetSettingsAction;
+import org.opensearch.security.signals.actions.settings.get.TransportGetSettingsAction;
+import org.opensearch.security.signals.actions.settings.put.PutSettingsAction;
+import org.opensearch.security.signals.actions.settings.put.TransportPutSettingsAction;
+import org.opensearch.security.signals.actions.settings.update.SettingsUpdateAction;
+import org.opensearch.security.signals.actions.settings.update.TransportSettingsUpdateAction;
+import org.opensearch.security.signals.actions.tenant.start_stop.StartStopTenantAction;
+import org.opensearch.security.signals.actions.tenant.start_stop.TransportStartStopTenantAction;
+import org.opensearch.security.signals.actions.watch.ack.AckWatchAction;
+import org.opensearch.security.signals.actions.watch.ack.TransportAckWatchAction;
+import org.opensearch.security.signals.actions.watch.activate_deactivate.TransportDeActivateWatchAction;
+import org.opensearch.security.signals.actions.watch.delete.DeleteWatchAction;
+import org.opensearch.security.signals.actions.watch.delete.TransportDeleteWatchAction;
+import org.opensearch.security.signals.actions.watch.execute.ExecuteWatchAction;
+import org.opensearch.security.signals.actions.watch.execute.TransportExecuteWatchAction;
+import org.opensearch.security.signals.actions.watch.get.GetWatchAction;
+import org.opensearch.security.signals.actions.watch.get.TransportGetWatchAction;
+import org.opensearch.security.signals.actions.watch.put.PutWatchAction;
+import org.opensearch.security.signals.actions.watch.put.TransportPutWatchAction;
+import org.opensearch.security.signals.actions.watch.search.SearchWatchAction;
+import org.opensearch.security.signals.actions.watch.search.TransportSearchWatchAction;
+import org.opensearch.security.signals.actions.watch.state.get.GetWatchStateAction;
+import org.opensearch.security.signals.actions.watch.state.get.TransportGetWatchStateAction;
+import org.opensearch.security.signals.actions.watch.state.search.SearchWatchStateAction;
+import org.opensearch.security.signals.actions.watch.state.search.TransportSearchWatchStateAction;
+import org.opensearch.security.signals.api.AccountApiAction;
+import org.opensearch.security.signals.api.AckWatchApiAction;
+import org.opensearch.security.signals.api.ConvertWatchApiAction;
+import org.opensearch.security.signals.api.DeActivateGloballyAction;
+import org.opensearch.security.signals.api.DeActivateTenantAction;
+import org.opensearch.security.signals.api.DeActivateWatchAction;
+import org.opensearch.security.signals.api.ExecuteWatchApiAction;
+import org.opensearch.security.signals.api.SearchAccountApiAction;
+import org.opensearch.security.signals.api.SearchWatchApiAction;
+import org.opensearch.security.signals.api.SearchWatchStateApiAction;
+import org.opensearch.security.signals.api.SettingsApiAction;
+import org.opensearch.security.signals.api.WatchApiAction;
+import org.opensearch.security.signals.api.WatchStateApiAction;
+import org.opensearch.security.signals.script.types.SignalsObjectFunctionScript;
+import org.opensearch.security.signals.settings.SignalsSettings;
+import org.opensearch.security.signals.watch.checks.Calc;
+import org.opensearch.security.signals.watch.checks.Condition;
+import org.opensearch.security.signals.watch.checks.Transform;
+import org.opensearch.security.signals.watch.severity.SeverityMapping;
 
 public class SignalsModule implements SearchGuardModule<Void>, ComponentStateProvider {
 
@@ -127,7 +127,7 @@ public class SignalsModule implements SearchGuardModule<Void>, ComponentStatePro
                     new ActionHandler<>(PutWatchAction.INSTANCE, TransportPutWatchAction.class),
                     new ActionHandler<>(DeleteWatchAction.INSTANCE, TransportDeleteWatchAction.class),
                     new ActionHandler<>(SearchWatchAction.INSTANCE, TransportSearchWatchAction.class),
-                    new ActionHandler<>(com.floragunn.signals.actions.watch.activate_deactivate.DeActivateWatchAction.INSTANCE,
+                    new ActionHandler<>(org.opensearch.security.signals.actions.watch.activate_deactivate.DeActivateWatchAction.INSTANCE,
                             TransportDeActivateWatchAction.class),
                     new ActionHandler<>(ExecuteWatchAction.INSTANCE, TransportExecuteWatchAction.class),
                     new ActionHandler<>(DestinationConfigUpdateAction.INSTANCE, TransportDestinationConfigUpdateAction.class),

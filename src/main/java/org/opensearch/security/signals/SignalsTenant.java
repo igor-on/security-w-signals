@@ -22,6 +22,7 @@ import org.opensearch.action.support.WriteRequest.RefreshPolicy;
 import org.opensearch.client.Client;
 import org.opensearch.cluster.service.ClusterService;
 import org.opensearch.core.common.Strings;
+import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.NamedXContentRegistry;
 import org.opensearch.common.xcontent.XContentType;
 import org.opensearch.env.NodeEnvironment;
@@ -278,7 +279,7 @@ public class SignalsTenant implements Closeable {
     public IndexResponse addWatch(Watch watch, User user) throws IOException {
 
         try {
-            return addWatch(watch.getId(), Strings.toString(watch), user);
+            return addWatch(watch.getId(), Strings.toString(MediaTypeRegistry.JSON ,watch), user);
         } catch (ConfigValidationException e) {
             // This should not happen
             throw new RuntimeException(e);
@@ -304,13 +305,16 @@ public class SignalsTenant implements Closeable {
         watchJson.set("_meta", watch.getMeta().toJsonNode());
         watchJson.put("_name", watchId);
 
+
         String newWatchJsonString = DefaultObjectMapper.writeJsonTree(watchJson);
 
-        IndexResponse indexResponse = privilegedConfigClient.prepareIndex(getConfigIndexName(), null, getWatchIdForConfigIndex(watch.getId()))
+//        IndexResponse indexResponse = privilegedConfigClient.prepareIndex(getConfigIndexName(), null, getWatchIdForConfigIndex(watch.getId()))
+        // TODO: IGOR_ON CHANGE
+        IndexResponse indexResponse = privilegedConfigClient.prepareIndex(getConfigIndexName())
                 .setSource(newWatchJsonString, XContentType.JSON).setRefreshPolicy(RefreshPolicy.IMMEDIATE).execute().actionGet();
 
         if (log.isDebugEnabled()) {
-            log.debug("IndexResponse from addWatch()\n" + Strings.toString(indexResponse));
+            log.debug("IndexResponse from addWatch()\n" + Strings.toString(MediaTypeRegistry.JSON ,indexResponse));
         }
 
         if (indexResponse.getResult() == Result.CREATED) {
@@ -469,7 +473,7 @@ public class SignalsTenant implements Closeable {
         private WatchState refreshState(Watch watch, WatchState oldState) {
             try {
                 if (log.isDebugEnabled()) {
-                    log.debug("Refreshing state for " + watch.getId() + "\nOld state: " + (oldState != null ? Strings.toString(oldState) : null));
+                    log.debug("Refreshing state for " + watch.getId() + "\nOld state: " + (oldState != null ? Strings.toString(MediaTypeRegistry.JSON ,oldState) : null));
                 }
                 WatchState newState = watchStateReader.get(watch.getId());
 
@@ -477,13 +481,13 @@ public class SignalsTenant implements Closeable {
                     if (log.isDebugEnabled()) {
                         log.debug("Got refreshed state for " + watch.getId()
                                 + "\nThis however has a null node. Thus, it is probably the initial default state. Discarding: "
-                                + (oldState != null ? Strings.toString(oldState) : null));
+                                + (oldState != null ? Strings.toString(MediaTypeRegistry.JSON ,oldState) : null));
                     }
 
                     return oldState;
                 } else {
                     if (log.isDebugEnabled()) {
-                        log.debug("Refreshed state for " + watch.getId() + "\nNew state: " + (oldState != null ? Strings.toString(oldState) : null));
+                        log.debug("Refreshed state for " + watch.getId() + "\nNew state: " + (oldState != null ? Strings.toString(MediaTypeRegistry.JSON ,oldState) : null));
                     }
 
                     newState.setNode(nodeName);

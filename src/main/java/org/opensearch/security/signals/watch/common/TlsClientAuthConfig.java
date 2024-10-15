@@ -85,7 +85,11 @@ public class TlsClientAuthConfig implements ToXContentObject {
 
         try {
             return PemKeyReader.toPrivateKey(inputStream, keyPassword);
-        } catch (IOException | OperatorCreationException | PKCSException e) {
+        } catch (IOException e) {
+            validationErrors.add(new InvalidAttributeValue(attribute, pem, "Private key in PEM file", jsonNode).cause(e));
+            return null;
+            // TODO: IGOR_ON CHANGE (delete some not used exceptions)
+        } catch (Exception e) {
             validationErrors.add(new InvalidAttributeValue(attribute, pem, "Private key in PEM file", jsonNode).cause(e));
             return null;
         }

@@ -176,6 +176,7 @@ public class SlackAction extends ActionHandler {
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
 
         @SuppressWarnings("unchecked")
+        // TODO: IGOR_ON (added convertValue methods from SG - maybe there is already OS implementation)
         final Map<String, Object> slackActionConfMap = (Map<String, Object>) DefaultObjectMapper.convertValue(slackActionConf,
                 DefaultObjectMapper.getTypeFactory().constructParametricType(Map.class, String.class, Object.class), true);
 

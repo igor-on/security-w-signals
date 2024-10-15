@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.opensearch.core.common.Strings;
+import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.ToXContent;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -54,7 +55,7 @@ public abstract class ActionInvoker implements ToXContent {
     }
 
     public String toJson() {
-        return Strings.toString(this);
+        return Strings.toString(MediaTypeRegistry.JSON, this);
     }
 
     protected static List<Check> createNestedChecks(WatchInitializationService watchInitService, ValidatingJsonNode vJsonNode,

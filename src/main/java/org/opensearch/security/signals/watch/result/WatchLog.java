@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.opensearch.core.common.Strings;
 import org.opensearch.common.time.DateFormatter;
+import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.ToXContentObject;
 import org.opensearch.core.xcontent.XContentBuilder;
 
@@ -214,7 +215,7 @@ public class WatchLog implements ToXContentObject {
 
     @Override
     public String toString() {
-        return Strings.toString(this);
+        return Strings.toString(MediaTypeRegistry.JSON, this);
     }
 
     public String getTenant() {

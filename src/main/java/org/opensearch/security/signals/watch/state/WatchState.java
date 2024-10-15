@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.core.common.Strings;
+import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.ToXContentObject;
 import org.opensearch.core.xcontent.XContentBuilder;
 
@@ -108,7 +109,7 @@ public class WatchState implements ToXContentObject {
     }
 
     public String toJsonString() {
-        return Strings.toString(this);
+        return Strings.toString(MediaTypeRegistry.JSON, this);
     }
 
     public static WatchState createFromJson(String tenant, String json) throws IOException {
@@ -220,7 +221,7 @@ public class WatchState implements ToXContentObject {
     }
 
     public String toString() {
-        return Strings.toString(this);
+        return Strings.toString(MediaTypeRegistry.JSON, this);
     }
 
     public Instant getCreationTime() {
