@@ -12,6 +12,7 @@ import org.opensearch.action.DocWriteResponse.Result;
 import org.opensearch.client.Client;
 import org.opensearch.client.node.NodeClient;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.ToXContent;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.common.xcontent.XContentType;
@@ -106,7 +107,9 @@ public class SettingsApiAction extends SignalsBaseRestHandler {
     protected RestChannelConsumer handlePut(String key, RestRequest request, Client client) throws IOException {
 
         String content = request.content().utf8ToString();
-        boolean contentIsJson = request.getXContentType() == XContentType.JSON;
+        // TODO: IGOR_ON CHANGE
+//        boolean contentIsJson = request.getXContentType() == XContentType.JSON;
+        boolean contentIsJson = request.getMediaType() == MediaTypeRegistry.JSON;
 
         return channel -> client.execute(PutSettingsAction.INSTANCE, new PutSettingsRequest(key, content, contentIsJson),
                 new ActionListener<PutSettingsResponse>() {

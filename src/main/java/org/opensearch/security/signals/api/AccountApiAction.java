@@ -14,6 +14,7 @@ import org.opensearch.client.Client;
 import org.opensearch.client.node.NodeClient;
 import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.ToXContent;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.common.xcontent.XContentType;
@@ -118,7 +119,9 @@ public class AccountApiAction extends SignalsBaseRestHandler {
 
     protected RestChannelConsumer handlePut(String accountType, String id, RestRequest request, Client client) throws IOException {
 
-        if (request.getXContentType() != XContentType.JSON) {
+        // TODO: IGOR_ON CHANGE
+//        if (request.getXContentType() != XContentType.JSON) {
+        if (request.getMediaType() != MediaTypeRegistry.JSON) {
             return channel -> errorResponse(channel, RestStatus.UNPROCESSABLE_ENTITY, "Accounts must be of content type application/json");
         }
 
@@ -152,7 +155,7 @@ public class AccountApiAction extends SignalsBaseRestHandler {
             toXContent.toXContent(builder, params);
             return builder;
         } catch (IOException e) {
-            throw ExceptionsHelper.convertToElastic(e);
+            throw ExceptionsHelper.convertToOpenSearchException(e);
         }
     }
 

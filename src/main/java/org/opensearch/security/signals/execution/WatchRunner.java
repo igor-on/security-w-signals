@@ -12,8 +12,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.client.Client;
 import org.opensearch.core.common.Strings;
+import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.NamedXContentRegistry;
-import org.opensearch.script.JodaCompatibleZonedDateme;
+import org.opensearch.script.JodaCompatibleZonedDateTime;
 import org.opensearch.script.ScriptService;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -145,7 +146,7 @@ public class WatchRunner implements Job {
 
             if (log.isDebugEnabled()) {
                 log.debug("Current watch state: " + (watchState != null ? watchState.getCreationTime() : "-") + "\n"
-                        + (watchState != null ? Strings.toString(watchState) : null));
+                        + (watchState != null ? Strings.toString(MediaTypeRegistry.JSON, watchState) : null));
             }
 
             boolean error = false;

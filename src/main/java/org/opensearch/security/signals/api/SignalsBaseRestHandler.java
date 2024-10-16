@@ -48,7 +48,7 @@ public abstract class SignalsBaseRestHandler extends BaseRestHandler {
             channel.sendResponse(new BytesRestResponse(status, builder));
         } catch (Exception e) {
             log.error(e.toString(), e);
-            throw ExceptionsHelper.convertToElastic(e);
+            throw ExceptionsHelper.convertToOpenSearchException(e);
         }
     }
 
@@ -69,7 +69,7 @@ public abstract class SignalsBaseRestHandler extends BaseRestHandler {
             channel.sendResponse(new BytesRestResponse(status, builder));
         } catch (Exception e) {
             log.error(e.toString(), e);
-            throw ExceptionsHelper.convertToElastic(e);
+            throw ExceptionsHelper.convertToOpenSearchException(e);
         }
     }
 
@@ -81,7 +81,7 @@ public abstract class SignalsBaseRestHandler extends BaseRestHandler {
             return builder;
         } catch (IOException e) {
             log.error(e.toString(), e);
-            throw ExceptionsHelper.convertToElastic(e);
+            throw ExceptionsHelper.convertToOpenSearchException(e);
         }
     }
 
