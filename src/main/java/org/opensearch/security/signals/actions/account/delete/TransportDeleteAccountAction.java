@@ -44,7 +44,8 @@ public class TransportDeleteAccountAction extends HandledTransportAction<DeleteA
         try {
             ThreadContext threadContext = threadPool.getThreadContext();
 
-            User user = threadContext.getTransient(ConfigConstants.SG_USER);
+            // TODO: IGOR_ON CHANGE (SG_ to OPENDISTRO_SECURITY_)
+            User user = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_USER);
 
             if (user == null) {
                 listener.onFailure(new Exception("Request did not contain user"));
@@ -53,15 +54,15 @@ public class TransportDeleteAccountAction extends HandledTransportAction<DeleteA
 
             Account account = signals.getAccountRegistry().lookupAccount(request.getAccountId(), request.getAccountType());
 
-            Object remoteAddress = threadContext.getTransient(ConfigConstants.SG_REMOTE_ADDRESS);
-            Object origin = threadContext.getTransient(ConfigConstants.SG_ORIGIN);
+            Object remoteAddress = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_REMOTE_ADDRESS);
+            Object origin = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_ORIGIN);
 
             try (StoredContext ctx = threadPool.getThreadContext().stashContext()) {
 
-                threadContext.putHeader(ConfigConstants.SG_CONF_REQUEST_HEADER, "true");
-                threadContext.putTransient(ConfigConstants.SG_USER, user);
-                threadContext.putTransient(ConfigConstants.SG_REMOTE_ADDRESS, remoteAddress);
-                threadContext.putTransient(ConfigConstants.SG_ORIGIN, origin);
+                threadContext.putHeader(ConfigConstants.OPENDISTRO_SECURITY_CONF_REQUEST_HEADER, "true");
+                threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_USER, user);
+                threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_REMOTE_ADDRESS, remoteAddress);
+                threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_ORIGIN, origin);
 
                 account.isInUse(client, signals.getSignalsSettings(), new ActionListener<Boolean>() {
 
@@ -71,8 +72,9 @@ public class TransportDeleteAccountAction extends HandledTransportAction<DeleteA
                             listener.onResponse(new DeleteAccountResponse(account.getScopedId(), -1, Result.IN_USE, RestStatus.CONFLICT,
                                     "The account is still in use"));
                         } else {
-                            client.prepareDelete(signals.getSignalsSettings().getStaticSettings().getIndexNames().getAccounts(), null,
-                                    account.getScopedId()).setRefreshPolicy(RefreshPolicy.IMMEDIATE).execute(new ActionListener<DeleteResponse>() {
+//                            client.prepareDelete(signals.getSignalsSettings().getStaticSettings().getIndexNames().getAccounts(), null, account.getScopedId())
+                            client.prepareDelete(signals.getSignalsSettings().getStaticSettings().getIndexNames().getAccounts(), account.getScopedId())
+                                    .setRefreshPolicy(RefreshPolicy.IMMEDIATE).execute(new ActionListener<DeleteResponse>() {
                                         @Override
                                         public void onResponse(DeleteResponse response) {
                                             if (response.getResult() == DocWriteResponse.Result.DELETED) {

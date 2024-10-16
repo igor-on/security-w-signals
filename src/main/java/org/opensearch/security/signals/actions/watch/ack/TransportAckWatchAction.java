@@ -58,7 +58,9 @@ public class TransportAckWatchAction
             DiscoveryNode localNode = clusterService.localNode();
             ThreadContext threadContext = threadPool.getThreadContext();
 
-            User user = threadContext.getTransient(ConfigConstants.SG_USER);
+            // TODO: IGOR_ON CHANGE
+//            User user = threadContext.getTransient(ConfigConstants.SG_USER);
+            User user = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_USER);
 
             if (user == null) {
                 return new NodeResponse(localNode, AckWatchResponse.Status.UNAUTHORIZED, "Request did not contain user");

@@ -83,7 +83,9 @@ public class TransportExecuteWatchAction extends HandledTransportAction<ExecuteW
         try {
             ThreadContext threadContext = threadPool.getThreadContext();
 
-            User user = threadContext.getTransient(ConfigConstants.SG_USER);
+            // TODO: IGOR_ON CHANGE
+//            User user = threadContext.getTransient(ConfigConstants.SG_USER);
+            User user = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_USER);
             SignalsTenant signalsTenant = signals.getTenant(user);
 
             if (request.getWatchJson() != null) {
@@ -106,16 +108,23 @@ public class TransportExecuteWatchAction extends HandledTransportAction<ExecuteW
             ActionListener<ExecuteWatchResponse> listener) {
         ThreadContext threadContext = threadPool.getThreadContext();
 
-        Object remoteAddress = threadContext.getTransient(ConfigConstants.SG_REMOTE_ADDRESS);
-        Object origin = threadContext.getTransient(ConfigConstants.SG_ORIGIN);
+//        Object remoteAddress = threadContext.getTransient(ConfigConstants.SG_REMOTE_ADDRESS);
+//        Object origin = threadContext.getTransient(ConfigConstants.SG_ORIGIN);
+        Object remoteAddress = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_REMOTE_ADDRESS);
+        Object origin = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_ORIGIN);
 
         try (StoredContext ctx = threadPool.getThreadContext().stashContext()) {
-            threadContext.putHeader(ConfigConstants.SG_CONF_REQUEST_HEADER, "true");
-            threadContext.putTransient(ConfigConstants.SG_USER, user);
-            threadContext.putTransient(ConfigConstants.SG_REMOTE_ADDRESS, remoteAddress);
-            threadContext.putTransient(ConfigConstants.SG_ORIGIN, origin);
+//            threadContext.putHeader(ConfigConstants.SG_CONF_REQUEST_HEADER, "true");
+//            threadContext.putTransient(ConfigConstants.SG_USER, user);
+//            threadContext.putTransient(ConfigConstants.SG_REMOTE_ADDRESS, remoteAddress);
+//            threadContext.putTransient(ConfigConstants.SG_ORIGIN, origin);
+            threadContext.putHeader(ConfigConstants.OPENDISTRO_SECURITY_CONF_REQUEST_HEADER, "true");
+            threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_USER, user);
+            threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_REMOTE_ADDRESS, remoteAddress);
+            threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_ORIGIN, origin);
 
-            client.prepareGet(signalsTenant.getConfigIndexName(), null, signalsTenant.getWatchIdForConfigIndex(request.getWatchId()))
+//            client.prepareGet(signalsTenant.getConfigIndexName(), null, signalsTenant.getWatchIdForConfigIndex(request.getWatchId()))
+            client.prepareGet(signalsTenant.getConfigIndexName(), signalsTenant.getWatchIdForConfigIndex(request.getWatchId()))
                     .execute(new ActionListener<GetResponse>() {
 
                         @Override
@@ -132,9 +141,12 @@ public class TransportExecuteWatchAction extends HandledTransportAction<ExecuteW
                                         signalsTenant.getName(), request.getWatchId(), response.getSourceAsString(), response.getVersion());
 
                                 try (StoredContext ctx = threadPool.getThreadContext().stashContext()) {
-                                    threadContext.putTransient(ConfigConstants.SG_USER, user);
-                                    threadContext.putTransient(ConfigConstants.SG_REMOTE_ADDRESS, remoteAddress);
-                                    threadContext.putTransient(ConfigConstants.SG_ORIGIN, origin);
+//                                    threadContext.putTransient(ConfigConstants.SG_USER, user);
+//                                    threadContext.putTransient(ConfigConstants.SG_REMOTE_ADDRESS, remoteAddress);
+//                                    threadContext.putTransient(ConfigConstants.SG_ORIGIN, origin);
+                                    threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_USER, user);
+                                    threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_REMOTE_ADDRESS, remoteAddress);
+                                    threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_ORIGIN, origin);
 
                                     listener.onResponse(executeWatch(watch, request, signalsTenant));
 

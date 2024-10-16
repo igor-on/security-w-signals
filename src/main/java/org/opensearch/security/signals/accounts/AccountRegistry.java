@@ -43,16 +43,17 @@ public class AccountRegistry {
     public void updateAtomic(Client client) throws IOException {
         ThreadContext threadContext = client.threadPool().getThreadContext();
 
-        User user = threadContext.getTransient(ConfigConstants.SG_USER);
-        Object remoteAddress = threadContext.getTransient(ConfigConstants.SG_REMOTE_ADDRESS);
-        Object origin = threadContext.getTransient(ConfigConstants.SG_ORIGIN);
+        // TODO: IGOR_ON CHANGE (SG_ to OPENDISTRO_SECURITY_)
+        User user = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_USER);
+        Object remoteAddress = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_REMOTE_ADDRESS);
+        Object origin = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_ORIGIN);
 
         try (StoredContext ctx = threadContext.stashContext()) {
 
-            threadContext.putHeader(ConfigConstants.SG_CONF_REQUEST_HEADER, "true");
-            threadContext.putTransient(ConfigConstants.SG_USER, user);
-            threadContext.putTransient(ConfigConstants.SG_REMOTE_ADDRESS, remoteAddress);
-            threadContext.putTransient(ConfigConstants.SG_ORIGIN, origin);
+            threadContext.putHeader(ConfigConstants.OPENDISTRO_SECURITY_CONF_REQUEST_HEADER, "true");
+            threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_USER, user);
+            threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_REMOTE_ADDRESS, remoteAddress);
+            threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_ORIGIN, origin);
 
             Map<String, Account> tmp = new HashMap<>();
 

@@ -49,28 +49,31 @@ public class TransportPutAccountAction extends HandledTransportAction<PutAccount
 
             ThreadContext threadContext = threadPool.getThreadContext();
 
-            User user = threadContext.getTransient(ConfigConstants.SG_USER);
+            // TODO: IGOR_ON CHANGE
+//            User user = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_USER);
+            User user = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_USER);
 
             if (user == null) {
                 listener.onResponse(new PutAccountResponse(scopedId, -1, Result.NOOP, RestStatus.UNAUTHORIZED, "Request did not contain user", null));
                 return;
             }
 
-            Object remoteAddress = threadContext.getTransient(ConfigConstants.SG_REMOTE_ADDRESS);
-            Object origin = threadContext.getTransient(ConfigConstants.SG_ORIGIN);
+            Object remoteAddress = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_REMOTE_ADDRESS);
+            Object origin = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_ORIGIN);
 
             Account account = Account.parse(request.getAccountType(), request.getAccountId(), request.getBody().utf8ToString());
 
             try (StoredContext ctx = threadPool.getThreadContext().stashContext(); XContentBuilder xContentBuilder = XContentFactory.jsonBuilder()) {
 
-                threadContext.putHeader(ConfigConstants.SG_CONF_REQUEST_HEADER, "true");
-                threadContext.putTransient(ConfigConstants.SG_USER, user);
-                threadContext.putTransient(ConfigConstants.SG_REMOTE_ADDRESS, remoteAddress);
-                threadContext.putTransient(ConfigConstants.SG_ORIGIN, origin);
+                threadContext.putHeader(ConfigConstants.OPENDISTRO_SECURITY_CONF_REQUEST_HEADER, "true");
+                threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_USER, user);
+                threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_REMOTE_ADDRESS, remoteAddress);
+                threadContext.putTransient(ConfigConstants.OPENDISTRO_SECURITY_ORIGIN, origin);
 
                 account.toXContent(xContentBuilder, ToXContent.EMPTY_PARAMS);
 
-                client.prepareIndex(this.signals.getSignalsSettings().getStaticSettings().getIndexNames().getAccounts(), null, scopedId)
+//                client.prepareIndex(this.signals.getSignalsSettings().getStaticSettings().getIndexNames().getAccounts(), null, scopedId)
+                client.prepareIndex(this.signals.getSignalsSettings().getStaticSettings().getIndexNames().getAccounts())
                         .setSource(xContentBuilder).setRefreshPolicy(RefreshPolicy.IMMEDIATE).execute(new ActionListener<IndexResponse>() {
                             @Override
                             public void onResponse(IndexResponse response) {

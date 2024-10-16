@@ -13,6 +13,7 @@ import org.opensearch.client.Client;
 import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.common.inject.Inject;
 import org.opensearch.common.util.concurrent.ThreadContext;
+import org.opensearch.core.rest.RestStatus;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.common.xcontent.XContentFactory;
 import org.opensearch.rest.RestUtils.*;
@@ -49,7 +50,9 @@ public class TransportGetWatchStateAction extends HandledTransportAction<GetWatc
         try {
             ThreadContext threadContext = threadPool.getThreadContext();
 
-            User user = threadContext.getTransient(ConfigConstants.SG_USER);
+            // TODO: IGOR_ON CHANGE
+//            User user = threadContext.getTransient(ConfigConstants.SG_USER);
+            User user = threadContext.getTransient(ConfigConstants.OPENDISTRO_SECURITY_USER);
 
             if (user == null) {
                 throw new RuntimeException("Request did not contain user");
