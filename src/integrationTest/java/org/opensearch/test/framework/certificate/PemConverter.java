@@ -111,7 +111,7 @@ class PemConverter {
         if (!Strings.isNullOrEmpty(password)) {
             JceOpenSSLPKCS8EncryptorBuilder encryptorBuilder = new JceOpenSSLPKCS8EncryptorBuilder(PKCS8Generator.PBE_SHA1_3DES);
             encryptorBuilder.setRandom(secureRandom);
-            encryptorBuilder.setPassword(password.toCharArray());
+            encryptorBuilder.setPasssword(password.toCharArray());
             return encryptorBuilder.build();
         }
         return null;

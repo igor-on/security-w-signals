@@ -1,7 +1,7 @@
 package org.opensearch.security.signals.watch.state;
 
 import org.opensearch.security.codova.config.temporal.DurationExpression;
-import com.floragunn.signals.watch.common.Ack;
+import org.opensearch.security.signals.watch.common.Ack;
 
 public class NopActionState extends ActionState {
 
